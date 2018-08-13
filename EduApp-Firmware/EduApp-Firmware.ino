@@ -27,9 +27,18 @@ void processSerialData() {
   Serial.println("\"");
 
   char *component = strtok(command, ":");
-  
+  char *command_id = strtok(NULL, ",");
+  char *type = strtok(NULL, ",");
+  char *action = strtok(NULL, ",");
+
   Serial.print("Component: \"");
   Serial.print(component);
+  Serial.print("\", command: \"");
+  Serial.print(command_id);
+  Serial.print("\", type: \"");
+  Serial.print(type);
+  Serial.print("\", action: \"");
+  Serial.print(action);
   Serial.println("\"");
 }
 
