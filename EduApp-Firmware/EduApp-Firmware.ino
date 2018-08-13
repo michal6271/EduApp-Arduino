@@ -9,14 +9,14 @@ void loop() {
 void processSerialData() {
   char temp;
   char command[32] = "";
-  int char_pos = 0;
+  int charPosition = 0;
   unsigned long timeout = millis();
   while(millis() - timeout <= 100) {
     while(Serial.available()) {
       temp = Serial.read();
       timeout = millis();
       if(temp == '\r' || temp == '\n') continue;
-      command[char_pos++] = temp;
+      command[charPosition++] = temp;
     }
   }
  
@@ -26,10 +26,11 @@ void processSerialData() {
   Serial.print(command);
   Serial.println("\"");
 
-  char *component = strtok(command, ":");
-  char *command_id = strtok(NULL, ",");
-  char *type = strtok(NULL, ",");
-  char *action = strtok(NULL, ",");
+  char* component = strtok(command, ":");
+  char* commandId = strtok(NULL, ",");
+  char* type = strtok(NULL, ",");
+  char* action = strtok(NULL, ",");
+
 
   Serial.print("Component: \"");
   Serial.print(component);
