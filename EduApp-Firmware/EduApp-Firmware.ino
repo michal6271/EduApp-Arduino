@@ -21,9 +21,15 @@ void processSerialData() {
   }
  
   if(strlen(command) == 0) return;
- 
+
   Serial.print("Command: \"");
   Serial.print(command);
+  Serial.println("\"");
+
+  char *component = strtok(command, ":");
+  
+  Serial.print("Component: \"");
+  Serial.print(component);
   Serial.println("\"");
 }
 
