@@ -8,23 +8,22 @@ void loop() {
 
 void processSerialData() {
   char temp;
-  String data = "";
+  char command[32] = "";
+  int char_pos = 0;
   unsigned long timeout = millis();
   while(millis() - timeout <= 100) {
     while(Serial.available()) {
       temp = Serial.read();
       timeout = millis();
       if(temp == '\r' || temp == '\n') continue;
-      data += temp;
+      command[char_pos++] = temp;
     }
   }
  
-  if(data.length() == 0) return;
+  if(strlen(command) == 0) return;
  
-  data.toUpperCase();
- 
-  Serial.print("GOT: \"");
-  Serial.print(data);
+  Serial.print("Command: \"");
+  Serial.print(command);
   Serial.println("\"");
 }
 
