@@ -1,5 +1,3 @@
-#include <ctype.h>
-
 void setup() {
   Serial.begin(9600);
 }
@@ -31,11 +29,25 @@ void processSerialData() {
   Serial.print(command);
   Serial.println("\"");
 
-  char* component = strtok(command, ":");
-  char* commandIdString = strtok(NULL, ",");
   char* conversionError;
-  int commandId = strtol(commandIdString, &conversionError, 10);
+  char* component = strtok(command, ":");
+
+  int componentIDStart = strcspn(component, "1234567890");
+  int componentLength = strlen(component);
+  char componentType[componentIDStart + 1];
+  char componentIDString[componentLength - componentIDStart + 1];
+  // "+ 1" each, since we need space for null terminator
+
+  strncpy(componentType, component, componentIDStart);
+  componentType[componentIDStart] = '\0';
+
+  strncpy(componentIDString, component + componentIDStart, componentLength - componentIDStart);
+  componentIDString[componentLength - componentIDStart] = '\0';
+
+  char* commandIDString = strtok(NULL, ",");
+  int commandID = strtol(commandIDString, &conversionError, 10);
   if (*conversionError) return; 
+
   char* type = strtok(NULL, ",");
   char* action = strtok(NULL, ",");
 
@@ -55,11 +67,15 @@ void processSerialData() {
   for (int i = 0; i < paramsCount; i++) {
     params[i] = strtok(NULL, ",");
   }
-  
+
   Serial.print("Component: \"");
   Serial.print(component);
+  Serial.print("\", component type: \"");
+  Serial.print(componentType);
+  Serial.print("\", component ID: \"");
+  Serial.print(componentIDString);
   Serial.print("\", command: \"");
-  Serial.print(commandId);
+  Serial.print(commandID);
   Serial.print("\", type: \"");
   Serial.print(type);
   Serial.print("\", action: \"");
