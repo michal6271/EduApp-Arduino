@@ -1,3 +1,4 @@
+
 void setup() {
   Serial.begin(9600);
 }
@@ -22,6 +23,7 @@ void processSerialData() {
  
   if(strlen(command) == 0) return;
 
+  char* commandCopy = strdup(command);
   Serial.print("Command: \"");
   Serial.print(command);
   Serial.println("\"");
@@ -31,15 +33,28 @@ void processSerialData() {
   char* type = strtok(NULL, ",");
   char* action = strtok(NULL, ",");
 
+  char* paramsCounterTemp = commandCopy;
+  int paramsCount = 0;
+
+  while(paramsCounterTemp != NULL) {
+    paramsCounterTemp = strchr(paramsCounterTemp, ',');
+    if (paramsCounterTemp) {
+      paramsCounterTemp++;
+      paramsCount++;
+    }
+  }
+  paramsCount = paramsCount - 2;
 
   Serial.print("Component: \"");
   Serial.print(component);
   Serial.print("\", command: \"");
-  Serial.print(command_id);
+  Serial.print(commandId);
   Serial.print("\", type: \"");
   Serial.print(type);
   Serial.print("\", action: \"");
   Serial.print(action);
+  Serial.print("\", params: \"");
+  Serial.print(paramsCount);
   Serial.println("\"");
 }
 
