@@ -9,7 +9,7 @@ void loop() {
 
 void processSerialData() {
   char temp;
-  char command[32] = "";
+  char command[64] = "";
   int charPosition = 0;
   unsigned long timeout = millis();
   while(millis() - timeout <= 100) {
@@ -24,7 +24,7 @@ void processSerialData() {
   if(strlen(command) == 0 || strchr(command, ';') == NULL) return;
 
   char* currentCommand = strtok(command, ";");
-  char* commandCopy = strdup(currentCommand);
+  char* commandForParamsCount = strdup(currentCommand);
   
   Serial.print("Command: \"");
   Serial.print(command);
@@ -35,17 +35,17 @@ void processSerialData() {
   char* type = strtok(NULL, ",");
   char* action = strtok(NULL, ",");
 
-  char* paramsCounterTemp = commandCopy;
   int paramsCount = 0;
-
-  while(paramsCounterTemp != NULL) {
-    paramsCounterTemp = strchr(paramsCounterTemp, ',');
-    if (paramsCounterTemp) {
-      paramsCounterTemp++;
+  while(commandForParamsCount != NULL) {
+    commandForParamsCount = strchr(commandForParamsCount, ',');
+    if (commandForParamsCount) {
+      commandForParamsCount++;
       paramsCount++;
     }
   }
+  // First two commas separate command id and type from params
   paramsCount = paramsCount - 2;
+
   char* params[paramsCount];
 
   for (int i = 0; i < paramsCount; i++) {
