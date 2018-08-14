@@ -44,7 +44,10 @@ void processSerialData() {
     }
   }
   paramsCount = paramsCount - 2;
-
+  char* params[paramsCount];
+  
+  params[0] = strtok(NULL, ",");
+  
   Serial.print("Component: \"");
   Serial.print(component);
   Serial.print("\", command: \"");
@@ -53,8 +56,10 @@ void processSerialData() {
   Serial.print(type);
   Serial.print("\", action: \"");
   Serial.print(action);
-  Serial.print("\", params: \"");
+  Serial.print("\", params[");
   Serial.print(paramsCount);
+  Serial.print("]: \"");
+  Serial.print(params[0]);
   Serial.println("\"");
 }
 
