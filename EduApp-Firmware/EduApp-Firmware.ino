@@ -43,6 +43,8 @@ void processSerialData() {
 
   strncpy(componentIDString, component + componentIDStart, componentLength - componentIDStart);
   componentIDString[componentLength - componentIDStart] = '\0';
+  int componentID = strtol(componentIDString, &conversionError, 10);
+  if (*conversionError) return;
 
   char* commandIDString = strtok(NULL, ",");
   int commandID = strtol(commandIDString, &conversionError, 10);
@@ -73,7 +75,7 @@ void processSerialData() {
   Serial.print("\", component type: \"");
   Serial.print(componentType);
   Serial.print("\", component ID: \"");
-  Serial.print(componentIDString);
+  Serial.print(componentID);
   Serial.print("\", command: \"");
   Serial.print(commandID);
   Serial.print("\", type: \"");
