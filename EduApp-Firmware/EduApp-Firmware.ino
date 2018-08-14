@@ -45,8 +45,10 @@ void processSerialData() {
   }
   paramsCount = paramsCount - 2;
   char* params[paramsCount];
-  
-  params[0] = strtok(NULL, ",");
+
+  for (int i = 0; i < paramsCount; i++) {
+    params[i] = strtok(NULL, ",");
+  }
   
   Serial.print("Component: \"");
   Serial.print(component);
@@ -58,8 +60,11 @@ void processSerialData() {
   Serial.print(action);
   Serial.print("\", params[");
   Serial.print(paramsCount);
-  Serial.print("]: \"");
-  Serial.print(params[0]);
-  Serial.println("\"");
+  Serial.print("]: ");
+  for (int i = 0; i < paramsCount; i++) {
+    Serial.print("\"");
+    Serial.print(params[i]);
+    Serial.print("\", ");
+  }
 }
 
