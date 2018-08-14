@@ -1,3 +1,4 @@
+#include <ctype.h>
 
 void setup() {
   Serial.begin(9600);
@@ -31,7 +32,10 @@ void processSerialData() {
   Serial.println("\"");
 
   char* component = strtok(command, ":");
-  char* commandId = strtok(NULL, ",");
+  char* commandIdString = strtok(NULL, ",");
+  char* conversionError;
+  int commandId = strtol(commandIdString, &conversionError, 10);
+  if (*conversionError) return; 
   char* type = strtok(NULL, ",");
   char* action = strtok(NULL, ",");
 
