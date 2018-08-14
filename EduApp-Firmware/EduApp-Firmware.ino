@@ -21,9 +21,11 @@ void processSerialData() {
     }
   }
  
-  if(strlen(command) == 0) return;
+  if(strlen(command) == 0 || strchr(command, ';') == NULL) return;
 
-  char* commandCopy = strdup(command);
+  char* currentCommand = strtok(command, ";");
+  char* commandCopy = strdup(currentCommand);
+  
   Serial.print("Command: \"");
   Serial.print(command);
   Serial.println("\"");
@@ -60,11 +62,12 @@ void processSerialData() {
   Serial.print(action);
   Serial.print("\", params[");
   Serial.print(paramsCount);
-  Serial.print("]: ");
+  Serial.print("]: {");
   for (int i = 0; i < paramsCount; i++) {
     Serial.print("\"");
     Serial.print(params[i]);
     Serial.print("\", ");
   }
+  Serial.println("}");
 }
 
