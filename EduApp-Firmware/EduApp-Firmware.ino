@@ -1,3 +1,5 @@
+int commandCount = 0;
+
 void setup() {
   Serial.begin(9600);
 }
@@ -22,10 +24,13 @@ void processSerialData() {
  
   if(strlen(command) == 0 || strchr(command, ';') == NULL) return;
 
+  commandCount++;
   char* currentCommand = strtok(command, ";");
   char* commandForParamsCount = strdup(currentCommand);
   
-  Serial.print("Command: \"");
+  Serial.print("Command #");
+  Serial.print(commandCount);
+  Serial.print(": \"");
   Serial.print(command);
   Serial.println("\"");
 
