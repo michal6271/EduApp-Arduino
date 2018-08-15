@@ -1,3 +1,6 @@
+const int MAX_COMMAND_SIZE = 64;
+const int TIMEOUT = 100;
+const int NUMBER_BASE = 10;
 int commandCount = 0;
 
 void setup() {
@@ -10,15 +13,15 @@ void loop() {
 
 void processSerialData() {
   char temp;
-  char command[64] = "";
+  char command[MAX_COMMAND_SIZE] = "";
   int charPosition = 0;
   boolean gotCommand = false;
-  unsigned long timeout = millis();
+  unsigned long startTime = millis();
   
-  while(millis() - timeout <= 100) {
+  while(millis() - startTime <= TIMEOUT) {
     while(Serial.available() && !gotCommand) {
       temp = Serial.read();
-      timeout = millis();
+      startTime = millis();
       if(temp == '\r' || temp == '\n') continue;
       else if (temp == ';') gotCommand = true;
       command[charPosition++] = temp;
@@ -73,10 +76,10 @@ void processSerialData() {
 
   char* conversionError;
 
-  int componentID = strtol(componentIDString, &conversionError, 10);
+  int componentID = strtol(componentIDString, &conversionError, NUMBER_BASE);
   if (*conversionError) return;
 
-  int commandID = strtol(commandIDString, &conversionError, 10);
+  int commandID = strtol(commandIDString, &conversionError, NUMBER_BASE);
   if (*conversionError) return;
 
   Serial.print("Component: \"");
