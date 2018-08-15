@@ -1,6 +1,10 @@
 const int MAX_COMMAND_SIZE = 64;
 const int TIMEOUT = 100;
 const int NUMBER_BASE = 10;
+const char* COMPONENT_SEPARATOR = ":";
+const char* COMMAND_TOKEN_DELIMETER = ",";
+const char* COMMAND_TERMINATOR = ";";
+
 int commandCount = 0;
 
 void setup() {
@@ -23,15 +27,15 @@ void processSerialData() {
       temp = Serial.read();
       startTime = millis();
       if(temp == '\r' || temp == '\n') continue;
-      else if (temp == ';') gotCommand = true;
+      else if (temp == *COMMAND_TERMINATOR) gotCommand = true;
       command[charPosition++] = temp;
     }
   }
  
-  if(strlen(command) == 0 || strchr(command, ';') == NULL) return;
+  if(strlen(command) == 0 || strchr(command, *COMMAND_TERMINATOR) == NULL) return;
 
   commandCount++;
-  char* currentCommand = strtok(command, ";");
+  char* currentCommand = strtok(command, COMMAND_TERMINATOR);
   char* commandForParamsCount = strdup(currentCommand);
   
   Serial.print("Command #");
@@ -40,14 +44,14 @@ void processSerialData() {
   Serial.print(command);
   Serial.println("\"");
 
-  char* component = strtok(command, ":");
-  char* commandIDString = strtok(NULL, ",");
-  char* type = strtok(NULL, ",");
-  char* action = strtok(NULL, ",");
+  char* component = strtok(command, COMPONENT_SEPARATOR);
+  char* commandIDString = strtok(NULL, COMMAND_TOKEN_DELIMETER);
+  char* type = strtok(NULL, COMMAND_TOKEN_DELIMETER);
+  char* action = strtok(NULL, COMMAND_TOKEN_DELIMETER);
 
   int paramsCount = 0;
   while(commandForParamsCount != NULL) {
-    commandForParamsCount = strchr(commandForParamsCount, ',');
+    commandForParamsCount = strchr(commandForParamsCount, *COMMAND_TOKEN_DELIMETER);
     if (commandForParamsCount) {
       commandForParamsCount++;
       paramsCount++;
@@ -59,7 +63,7 @@ void processSerialData() {
   char* params[paramsCount];
 
   for (int i = 0; i < paramsCount; i++) {
-    params[i] = strtok(NULL, ",");
+    params[i] = strtok(NULL, COMMAND_TOKEN_DELIMETER);
   }
 
   int componentIDStart = strcspn(component, "1234567890");
