@@ -12,12 +12,15 @@ void processSerialData() {
   char temp;
   char command[64] = "";
   int charPosition = 0;
+  boolean gotCommand = false;
   unsigned long timeout = millis();
+  
   while(millis() - timeout <= 100) {
-    while(Serial.available()) {
+    while(Serial.available() && !gotCommand) {
       temp = Serial.read();
       timeout = millis();
       if(temp == '\r' || temp == '\n') continue;
+      else if (temp == ';') gotCommand = true;
       command[charPosition++] = temp;
     }
   }
