@@ -6,6 +6,8 @@ class Component {
 
   public:
   Component(const char* compAddress, ComponentType compType) : address(compAddress), type(compType) {}
+  const char* getAddress() { return address; }
+  ComponentType getType() { return type; }
 };
 
 const int JSON_BUFFER_CAPACITY = JSON_OBJECT_SIZE(16);
@@ -18,6 +20,7 @@ Component led1("D13", ComponentType::BooleanOut);
 
 void setup() {
   Serial.begin(9600);
+  Serial.println(led1.getAddress());
 }
 
 void loop() {
