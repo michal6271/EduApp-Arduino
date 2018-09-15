@@ -2,6 +2,7 @@
 #include "BooleanLedComponent.cpp"
 #include "PwmRgbLedComponent.cpp"
 #include "WS2812RgbLedComponent.cpp"
+#include "ButtonComponent.cpp"
 
 const int JSON_BUFFER_CAPACITY = JSON_OBJECT_SIZE(16);
 const int MAX_COMMAND_SIZE = 256;
@@ -32,6 +33,15 @@ WS2812RgbLedComponent ws2812RgbLeds[] = {
   WS2812RgbLedComponent(&ws2812Driver, 4)
 };
 const int ws2812RgbLedsCount = sizeof(ws2812RgbLeds)/sizeof(WS2812RgbLedComponent);
+
+ButtonComponent buttons[] = {
+  ButtonComponent(4),
+  ButtonComponent(5),
+  ButtonComponent(6),
+  ButtonComponent(7),
+  ButtonComponent(8)
+};
+const int buttonsCount = sizeof(buttons)/sizeof(ButtonComponent);
 
 void setup() {
   Serial.begin(9600);
@@ -114,6 +124,14 @@ void processJsonCommand(JsonObject& command) {
     responseData["blue"] = ws2812RgbLedComponent.getBlue();
     response["data"] = responseData;
     response["isError"] = false;
+  } else if(checkComponent(componentName, "ButtonComponent", componentId, buttonsCount)) {
+    ButtonComponent& buttonComponent = buttons[componentId];
+    response["componentAddr"] = buttonComponent.getAddress();
+    if(!setValue) {
+      responseData["state"] = buttonComponent.getState();
+      response["data"] = responseData;
+      response["isError"] = false;
+    }
   }
   response.prettyPrintTo(Serial);
 }
