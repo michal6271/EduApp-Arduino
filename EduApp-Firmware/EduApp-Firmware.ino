@@ -1,5 +1,6 @@
 #include <ArduinoJson.h>
 #include "BooleanLedComponent.cpp"
+#include "PwmRgbLedComponent.cpp"
 
 const int JSON_BUFFER_CAPACITY = JSON_OBJECT_SIZE(16);
 const int MAX_COMMAND_SIZE = 256;
@@ -17,8 +18,12 @@ const BooleanLedComponent booleanLeds[] = {
   BooleanLedComponent(10),
   BooleanLedComponent(11)
 };
-
 const int booleanLedsCount = sizeof(booleanLeds)/sizeof(BooleanLedComponent);
+
+const PwmRgbLedComponent pwmRgbLeds[] = {
+  PwmRgbLedComponent(9, 10, 11)
+};
+const int pwmRgbLedsCount = sizeof(pwmRgbLeds)/sizeof(PwmRgbLedComponent);
 
 void setup() {
   Serial.begin(9600);
@@ -73,6 +78,23 @@ void processJsonCommand(JsonObject& command) {
       case CMD_GET:
         JsonObject& data = JSONBuffer.createObject();
         data["state"] = booleanLedComponent.getState();
+        response["data"] = data;
+        response["isError"] = false;
+        break;
+    }
+  } else if(checkComponent(componentName, "PwmRgbLedComponent", componentId, pwmRgbLedsCount)) {
+    PwmRgbLedComponent pwmRgbLedComponent = pwmRgbLeds[componentId];
+    response["componentAddr"] = pwmRgbLedComponent.getAddress();
+    switch(commandType) {
+      case CMD_SET:
+        pwmRgbLedComponent.setRed(command["data"]["red"]);
+        pwmRgbLedComponent.setGreen(command["data"]["green"]);
+        pwmRgbLedComponent.setBlue(command["data"]["blue"]);
+      case CMD_GET:
+        JsonObject& data = JSONBuffer.createObject();
+        data["red"] = pwmRgbLedComponent.getRed();
+        data["green"] = pwmRgbLedComponent.getGreen();
+        data["blue"] = pwmRgbLedComponent.getBlue();
         response["data"] = data;
         response["isError"] = false;
         break;
