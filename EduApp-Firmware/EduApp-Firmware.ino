@@ -4,6 +4,7 @@
 #include "WS2812RgbLedComponent.cpp"
 #include "ButtonComponent.cpp"
 #include "BuzzerComponent.cpp"
+#include "AnalogInputComponent.cpp"
 
 const int JSON_BUFFER_CAPACITY = JSON_OBJECT_SIZE(16);
 const int MAX_COMMAND_SIZE = 256;
@@ -48,6 +49,26 @@ BuzzerComponent buzzers[] = {
   BuzzerComponent(2)
 };
 const int buzzersCount = sizeof(buzzers)/sizeof(BuzzerComponent);
+
+AnalogInputComponent potentiometers[] = {
+  AnalogInputComponent(A1, "PotentiometerComponent")
+};
+const int potentiometersCount = sizeof(potentiometers)/sizeof(AnalogInputComponent);
+
+AnalogInputComponent thermometers[] = {
+  AnalogInputComponent(A2, "ThermometerComponent")
+};
+const int thermometersCount = sizeof(thermometers)/sizeof(AnalogInputComponent);
+
+AnalogInputComponent microphones[] = {
+  AnalogInputComponent(A0, "MicrophoneComponent")
+};
+const int microphonesCount = sizeof(microphones)/sizeof(AnalogInputComponent);
+
+AnalogInputComponent lightSensors[] = {
+  AnalogInputComponent(A3, "LightSensorComponent")
+};
+const int lightSensorsCount = sizeof(lightSensors)/sizeof(AnalogInputComponent);
 
 void setup() {
   Serial.begin(9600);
@@ -139,6 +160,38 @@ void processJsonCommand(JsonObject& command) {
     responseData["state"] = buzzerComponent.getState();
     response["data"] = responseData;
     response["isError"] = false;
+  } else if(checkComponent(componentName, "PotentiometerComponent", componentId, potentiometersCount)) {
+    AnalogInputComponent& analogInputComponent = potentiometers[componentId];
+    response["componentAddr"] = analogInputComponent.getAddress();
+    if(!setValue) {
+      responseData["value"] = analogInputComponent.getValue();
+      response["data"] = responseData;
+      response["isError"] = false;
+    }
+  } else if(checkComponent(componentName, "ThermometerComponent", componentId, thermometersCount)) {
+    AnalogInputComponent& analogInputComponent = thermometers[componentId];
+    response["componentAddr"] = analogInputComponent.getAddress();
+    if(!setValue) {
+      responseData["value"] = analogInputComponent.getValue();
+      response["data"] = responseData;
+      response["isError"] = false;
+    }
+  } else if(checkComponent(componentName, "MicrophoneComponent", componentId, microphonesCount)) {
+    AnalogInputComponent& analogInputComponent = microphones[componentId];
+    response["componentAddr"] = analogInputComponent.getAddress();
+    if(!setValue) {
+      responseData["value"] = analogInputComponent.getValue();
+      response["data"] = responseData;
+      response["isError"] = false;
+    }
+  } else if(checkComponent(componentName, "LightSensorComponent", componentId, lightSensorsCount)) {
+    AnalogInputComponent& analogInputComponent = lightSensors[componentId];
+    response["componentAddr"] = analogInputComponent.getAddress();
+    if(!setValue) {
+      responseData["value"] = analogInputComponent.getValue();
+      response["data"] = responseData;
+      response["isError"] = false;
+    }
   } else if(checkComponent(componentName, "ButtonComponent", componentId, buttonsCount)) {
     ButtonComponent& buttonComponent = buttons[componentId];
     response["componentAddr"] = buttonComponent.getAddress();
