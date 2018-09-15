@@ -7,6 +7,7 @@
 #include "AnalogInputComponent.cpp"
 #include "ThermometerComponent.cpp"
 #include "SevenSegComponent.cpp"
+#include "Lcd1602Component.cpp"
 
 const int JSON_BUFFER_CAPACITY = JSON_OBJECT_SIZE(10);
 const int MAX_COMMAND_SIZE = 200;
@@ -77,12 +78,18 @@ SevenSegComponent sevenSegs[] = {
 };
 const int sevenSegsCount = sizeof(sevenSegs)/sizeof(SevenSegComponent);
 
-
+Lcd1602Component lcds1602[] = {
+  Lcd1602Component(0x20)
+};
+const int lcds1602Count = sizeof(lcds1602)/sizeof(Lcd1602Component);
 
 void setup() {
   Serial.begin(9600);
   for(int x = 0; x < sevenSegsCount; x++) {
     sevenSegs[x].begin();
+  }
+  for(int x = 0; x < lcds1602Count; x++) {
+    lcds1602[x].begin();
   }
 }
 
@@ -171,6 +178,13 @@ void processJsonCommand(JsonObject& command) {
     }
     responseData["segments"] = sevenSegComponent.getSegments();
     response["data"] = responseData;
+    response["isError"] = false;
+  } else if(checkComponent(componentName, "Lcd1602Component", componentId, lcds1602Count)) {
+    Lcd1602Component& lcd1602Component = lcds1602[componentId];
+    response["componentAddr"] = lcd1602Component.getAddress();
+    if(setValue) {
+      lcd1602Component.setText(command["data"]["text"]);
+    }
     response["isError"] = false;
   } else if(checkComponent(componentName, "BuzzerComponent", componentId, buzzersCount)) {
     BuzzerComponent& buzzerComponent = buzzers[componentId];
