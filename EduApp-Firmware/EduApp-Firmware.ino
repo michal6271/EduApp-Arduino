@@ -6,9 +6,10 @@
 #include "BuzzerComponent.cpp"
 #include "AnalogInputComponent.cpp"
 #include "ThermometerComponent.cpp"
+#include "SevenSegComponent.cpp"
 
-const int JSON_BUFFER_CAPACITY = JSON_OBJECT_SIZE(16);
-const int MAX_COMMAND_SIZE = 256;
+const int JSON_BUFFER_CAPACITY = JSON_OBJECT_SIZE(10);
+const int MAX_COMMAND_SIZE = 200;
 const int TIMEOUT = 100;
 
 Adafruit_NeoPixel ws2812Driver = Adafruit_NeoPixel(5, 12, NEO_GRB + NEO_KHZ800);
@@ -71,8 +72,18 @@ AnalogInputComponent lightSensors[] = {
 };
 const int lightSensorsCount = sizeof(lightSensors)/sizeof(AnalogInputComponent);
 
+SevenSegComponent sevenSegs[] = {
+  SevenSegComponent(0x24)
+};
+const int sevenSegsCount = sizeof(sevenSegs)/sizeof(SevenSegComponent);
+
+
+
 void setup() {
   Serial.begin(9600);
+  for(int x = 0; x < sevenSegsCount; x++) {
+    sevenSegs[x].begin();
+  }
 }
 
 void loop() {
@@ -150,6 +161,15 @@ void processJsonCommand(JsonObject& command) {
     responseData["red"] = ws2812RgbLedComponent.getRed();
     responseData["green"] = ws2812RgbLedComponent.getGreen();
     responseData["blue"] = ws2812RgbLedComponent.getBlue();
+    response["data"] = responseData;
+    response["isError"] = false;
+  } else if(checkComponent(componentName, "SevenSegComponent", componentId, sevenSegsCount)) {
+    SevenSegComponent& sevenSegComponent = sevenSegs[componentId];
+    response["componentAddr"] = sevenSegComponent.getAddress();
+    if(setValue) {
+      sevenSegComponent.setSegments(command["data"]["segments"]);
+    }
+    responseData["segments"] = sevenSegComponent.getSegments();
     response["data"] = responseData;
     response["isError"] = false;
   } else if(checkComponent(componentName, "BuzzerComponent", componentId, buzzersCount)) {
