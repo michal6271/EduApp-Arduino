@@ -9,26 +9,21 @@
 #include "SevenSegComponent.cpp"
 #include "Lcd1602Component.cpp"
 
-const int JSON_BUFFER_CAPACITY = JSON_OBJECT_SIZE(10);
-const int MAX_COMMAND_SIZE = 200;
-const int TIMEOUT = 100;
+#define JSON_BUFFER_CAPACITY  JSON_OBJECT_SIZE(10)
+#define MAX_COMMAND_SIZE      200
+#define TIMEOUT               100
 
 Adafruit_NeoPixel ws2812Driver = Adafruit_NeoPixel(5, 12, NEO_GRB + NEO_KHZ800);
 
 BooleanLedComponent booleanLeds[] = {
-  BooleanLedComponent(13),
-
-  // PWM RGB LEDs as BooleanLeds for testing purposes
-  BooleanLedComponent(9),
-  BooleanLedComponent(10),
-  BooleanLedComponent(11)
+  BooleanLedComponent(13)
 };
-const int booleanLedsCount = sizeof(booleanLeds)/sizeof(BooleanLedComponent);
+const uint8_t booleanLedsCount = sizeof(booleanLeds)/sizeof(BooleanLedComponent);
 
 PwmRgbLedComponent pwmRgbLeds[] = {
   PwmRgbLedComponent(9, 10, 11)
 };
-const int pwmRgbLedsCount = sizeof(pwmRgbLeds)/sizeof(PwmRgbLedComponent);
+const uint8_t pwmRgbLedsCount = sizeof(pwmRgbLeds)/sizeof(PwmRgbLedComponent);
 
 WS2812RgbLedComponent ws2812RgbLeds[] = {
   WS2812RgbLedComponent(&ws2812Driver, 0),
@@ -37,7 +32,7 @@ WS2812RgbLedComponent ws2812RgbLeds[] = {
   WS2812RgbLedComponent(&ws2812Driver, 3),
   WS2812RgbLedComponent(&ws2812Driver, 4)
 };
-const int ws2812RgbLedsCount = sizeof(ws2812RgbLeds)/sizeof(WS2812RgbLedComponent);
+const uint8_t ws2812RgbLedsCount = sizeof(ws2812RgbLeds)/sizeof(WS2812RgbLedComponent);
 
 ButtonComponent buttons[] = {
   ButtonComponent(4),
@@ -46,45 +41,51 @@ ButtonComponent buttons[] = {
   ButtonComponent(7),
   ButtonComponent(8)
 };
-const int buttonsCount = sizeof(buttons)/sizeof(ButtonComponent);
+const uint8_t buttonsCount = sizeof(buttons)/sizeof(ButtonComponent);
 
 BuzzerComponent buzzers[] = {
   BuzzerComponent(2)
 };
-const int buzzersCount = sizeof(buzzers)/sizeof(BuzzerComponent);
+const uint8_t buzzersCount = sizeof(buzzers)/sizeof(BuzzerComponent);
 
 AnalogInputComponent potentiometers[] = {
   AnalogInputComponent(A1, "PotentiometerComponent")
 };
-const int potentiometersCount = sizeof(potentiometers)/sizeof(AnalogInputComponent);
+const uint8_t potentiometersCount = sizeof(potentiometers)/sizeof(AnalogInputComponent);
 
 ThermometerComponent thermometers[] = {
   ThermometerComponent(A2)
 };
-const int thermometersCount = sizeof(thermometers)/sizeof(ThermometerComponent);
+const uint8_t thermometersCount = sizeof(thermometers)/sizeof(ThermometerComponent);
 
 AnalogInputComponent microphones[] = {
   AnalogInputComponent(A0, "MicrophoneComponent")
 };
-const int microphonesCount = sizeof(microphones)/sizeof(AnalogInputComponent);
+const uint8_t microphonesCount = sizeof(microphones)/sizeof(AnalogInputComponent);
 
 AnalogInputComponent lightSensors[] = {
   AnalogInputComponent(A3, "LightSensorComponent")
 };
-const int lightSensorsCount = sizeof(lightSensors)/sizeof(AnalogInputComponent);
+const uint8_t lightSensorsCount = sizeof(lightSensors)/sizeof(AnalogInputComponent);
 
 SevenSegComponent sevenSegs[] = {
   SevenSegComponent(0x24)
 };
-const int sevenSegsCount = sizeof(sevenSegs)/sizeof(SevenSegComponent);
+const uint8_t sevenSegsCount = sizeof(sevenSegs)/sizeof(SevenSegComponent);
 
 Lcd1602Component lcds1602[] = {
   Lcd1602Component(0x20)
 };
-const int lcds1602Count = sizeof(lcds1602)/sizeof(Lcd1602Component);
+const uint8_t lcds1602Count = sizeof(lcds1602)/sizeof(Lcd1602Component);
 
 void setup() {
   Serial.begin(9600);
+  for(int x = 0; x < ws2812RgbLedsCount; x++) {
+    ws2812RgbLeds[x].setRed(0);
+    ws2812RgbLeds[x].setGreen(0);
+    ws2812RgbLeds[x].setBlue(0);
+    ws2812RgbLeds[x].update();
+  }
   for(int x = 0; x < sevenSegsCount; x++) {
     sevenSegs[x].begin();
   }
@@ -125,11 +126,14 @@ void processJsonCommand(JsonObject& command) {
   const bool setValue = command.containsKey("data");
   const int componentId = command["componentId"];
   const int commandId = command["commandId"];
-  
-
+ 
   JsonObject& response = JSONBuffer.createObject();
   JsonObject& responseData = JSONBuffer.createObject();
   response["commandId"] = commandId;
+  if(componentName == NULL) {
+    Serial.println(F("{\"commandId\":0,\"componentName\": null,\"data\": \"BooleanLed-1,PwmRgbLed-1,WS2812RgbLed-5,Button-5,Buzzer-1,Thermometer-1,Potentiometer-1,Microphone-1,LightSensor-1,SevenSeg-1,Lcd1602-1\"}"));
+    return; 
+  }
   response["componentName"] = componentName;
   response["componentId"] = componentId;
   response["isError"] = true;
@@ -183,7 +187,7 @@ void processJsonCommand(JsonObject& command) {
     Lcd1602Component& lcd1602Component = lcds1602[componentId];
     response["componentAddr"] = lcd1602Component.getAddress();
     if(setValue) {
-      lcd1602Component.setText(command["data"]["text"]);
+      lcd1602Component.setText(command["data"]["text0"]);
     }
     response["isError"] = false;
   } else if(checkComponent(componentName, "BuzzerComponent", componentId, buzzersCount)) {
@@ -237,7 +241,8 @@ void processJsonCommand(JsonObject& command) {
       response["isError"] = false;
     }
   }
-  response.prettyPrintTo(Serial);
+  response.printTo(Serial);
+  Serial.println();
 }
 
 bool equalComponentNames(const char * component1, const char * component2) {
