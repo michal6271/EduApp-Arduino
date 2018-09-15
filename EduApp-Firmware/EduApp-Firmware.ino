@@ -5,6 +5,7 @@
 #include "ButtonComponent.cpp"
 #include "BuzzerComponent.cpp"
 #include "AnalogInputComponent.cpp"
+#include "ThermometerComponent.cpp"
 
 const int JSON_BUFFER_CAPACITY = JSON_OBJECT_SIZE(16);
 const int MAX_COMMAND_SIZE = 256;
@@ -55,10 +56,10 @@ AnalogInputComponent potentiometers[] = {
 };
 const int potentiometersCount = sizeof(potentiometers)/sizeof(AnalogInputComponent);
 
-AnalogInputComponent thermometers[] = {
-  AnalogInputComponent(A2, "ThermometerComponent")
+ThermometerComponent thermometers[] = {
+  ThermometerComponent(A2)
 };
-const int thermometersCount = sizeof(thermometers)/sizeof(AnalogInputComponent);
+const int thermometersCount = sizeof(thermometers)/sizeof(ThermometerComponent);
 
 AnalogInputComponent microphones[] = {
   AnalogInputComponent(A0, "MicrophoneComponent")
@@ -169,10 +170,11 @@ void processJsonCommand(JsonObject& command) {
       response["isError"] = false;
     }
   } else if(checkComponent(componentName, "ThermometerComponent", componentId, thermometersCount)) {
-    AnalogInputComponent& analogInputComponent = thermometers[componentId];
-    response["componentAddr"] = analogInputComponent.getAddress();
+    ThermometerComponent& thermometerComponent = thermometers[componentId];
+    response["componentAddr"] = thermometerComponent.getAddress();
     if(!setValue) {
-      responseData["value"] = analogInputComponent.getValue();
+      responseData["value"] = thermometerComponent.getValue();
+      responseData["valueCelsius"] = thermometerComponent.getConvertedValueCelsius();
       response["data"] = responseData;
       response["isError"] = false;
     }

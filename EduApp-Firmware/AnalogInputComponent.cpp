@@ -1,3 +1,6 @@
+#ifndef ANALOG_INPUT_COMPONENT_H
+#define ANALOG_INPUT_COMPONENT_H
+
 #include "Arduino.h"
 #include "Component.h"
 
@@ -26,4 +29,6 @@ class AnalogInputComponent : public Component {
     return analogRead(this->pin);
   }
 };
+
+#endif
 
