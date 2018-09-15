@@ -6,7 +6,7 @@ const int JSON_BUFFER_CAPACITY = JSON_OBJECT_SIZE(16);
 const int MAX_COMMAND_SIZE = 256;
 const int TIMEOUT = 100;
 
-const BooleanLedComponent booleanLeds[] = {
+BooleanLedComponent booleanLeds[] = {
   BooleanLedComponent(13),
 
   // PWM RGB LEDs as BooleanLeds for testing purposes
@@ -16,7 +16,7 @@ const BooleanLedComponent booleanLeds[] = {
 };
 const int booleanLedsCount = sizeof(booleanLeds)/sizeof(BooleanLedComponent);
 
-const PwmRgbLedComponent pwmRgbLeds[] = {
+PwmRgbLedComponent pwmRgbLeds[] = {
   PwmRgbLedComponent(9, 10, 11)
 };
 const int pwmRgbLedsCount = sizeof(pwmRgbLeds)/sizeof(PwmRgbLedComponent);
@@ -67,7 +67,7 @@ void processJsonCommand(JsonObject& command) {
   response["isError"] = true;
   
   if(checkComponent(componentName, "BooleanLedComponent", componentId, booleanLedsCount)) {
-    BooleanLedComponent booleanLedComponent = booleanLeds[componentId];
+    BooleanLedComponent& booleanLedComponent = booleanLeds[componentId];
     response["componentAddr"] = booleanLedComponent.getAddress();
     if(setValue) {
       booleanLedComponent.setState(command["data"]["state"]);
@@ -76,7 +76,7 @@ void processJsonCommand(JsonObject& command) {
     response["data"] = responseData;
     response["isError"] = false;
   } else if(checkComponent(componentName, "PwmRgbLedComponent", componentId, pwmRgbLedsCount)) {
-    PwmRgbLedComponent pwmRgbLedComponent = pwmRgbLeds[componentId];
+    PwmRgbLedComponent& pwmRgbLedComponent = pwmRgbLeds[componentId];
     response["componentAddr"] = pwmRgbLedComponent.getAddress();
     if(setValue) {
       pwmRgbLedComponent.setRed(command["data"]["red"]);
