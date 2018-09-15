@@ -3,6 +3,7 @@
 #include "PwmRgbLedComponent.cpp"
 #include "WS2812RgbLedComponent.cpp"
 #include "ButtonComponent.cpp"
+#include "BuzzerComponent.cpp"
 
 const int JSON_BUFFER_CAPACITY = JSON_OBJECT_SIZE(16);
 const int MAX_COMMAND_SIZE = 256;
@@ -42,6 +43,11 @@ ButtonComponent buttons[] = {
   ButtonComponent(8)
 };
 const int buttonsCount = sizeof(buttons)/sizeof(ButtonComponent);
+
+BuzzerComponent buzzers[] = {
+  BuzzerComponent(2)
+};
+const int buzzersCount = sizeof(buzzers)/sizeof(BuzzerComponent);
 
 void setup() {
   Serial.begin(9600);
@@ -122,6 +128,15 @@ void processJsonCommand(JsonObject& command) {
     responseData["red"] = ws2812RgbLedComponent.getRed();
     responseData["green"] = ws2812RgbLedComponent.getGreen();
     responseData["blue"] = ws2812RgbLedComponent.getBlue();
+    response["data"] = responseData;
+    response["isError"] = false;
+  } else if(checkComponent(componentName, "BuzzerComponent", componentId, buzzersCount)) {
+    BuzzerComponent& buzzerComponent = buzzers[componentId];
+    response["componentAddr"] = buzzerComponent.getAddress();
+    if(setValue) {
+      buzzerComponent.setState(command["data"]["state"]);
+    }
+    responseData["state"] = buzzerComponent.getState();
     response["data"] = responseData;
     response["isError"] = false;
   } else if(checkComponent(componentName, "ButtonComponent", componentId, buttonsCount)) {
