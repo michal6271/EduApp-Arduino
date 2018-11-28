@@ -1,0 +1,36 @@
+# INPUT
+## BUTTON LEFT
+### PIN 4
+## BUTTON DOWN
+### PIN 5
+## BUTTON UP
+### PIN 6
+## BUTTON RIGHT
+### PIN 7
+## BUTTON ENTER
+### PIN 8
+## POT
+### PIN A1
+## TEMP
+### A2
+## LIGHT
+### A3
+# OUTPUT
+## BUZZER
+### PIN2
+## LED2:R
+### PIN 9
+## LED2:G
+### PIN 10
+## LED2:B
+### PIN 11
+## LED3
+### PIN 12
+## LED1
+### PIN 13
+## 7SEG DISPLAY
+### 0X24
+## OLED
+### 0X3C
+## LCD
+### 0X20
